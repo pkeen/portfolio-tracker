@@ -4,6 +4,31 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
+
+# CLI entrypoint: uv exposes this via `uv run pt ...`
+[project.scripts]
+pt = "portfolio_tracker.entrypoints.cli:app"
+
+
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-select = ["I"] # isort
+fix = true
+
+[tool.mypy]
+python_version = "3.12"
+warn_unused_ignores = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+addopts = "-q --cov=portfolio_tracker --cov-report=term-missing"
+
+
+
 dependencies = [
     "alembic>=1.16.5",
     "pydantic>=2.11.9",
@@ -21,3 +46,4 @@ dev = [
     "pytest-cov>=7.0.0",
     "ruff>=0.13.1",
 ]
+

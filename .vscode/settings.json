@@ -1,0 +1,11 @@
+{
+	"python.defaultInterpreterPath": ".venv/bin/python",
+	"python.analysis.typeCheckingMode": "basic", // or "strict"
+	"python.testing.pytestEnabled": true,
+	"python.testing.pytestArgs": ["-q"],
+	"ruff.lint.args": ["--fix"],
+	"editor.codeActionsOnSave": {
+		"source.organizeImports": "explicit",
+		"source.fixAll.ruff": "explicit"
+	}
+}

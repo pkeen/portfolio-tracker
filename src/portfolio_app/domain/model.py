@@ -80,13 +80,13 @@ class Trade:
     trade_type: TradeType
     ts: datetime
 
-@dataclass
-class Portfolio:
-    id: UUID
-    base_currency: Currency
-    positions: dict[Ticker, Position]
-    cash: Money
+# @dataclass
+# class Portfolio:
+#     id: UUID
+#     base_currency: Currency
+#     positions: dict[Ticker, Position]
+#     cash: Money
 
-    # apply_trade(trade: Trade) — updates cash, quantity, avg cost (buy/sell rules).
-    def apply_trade(self, trade: Trade):
-        pass
+#     # apply_trade(trade: Trade) — updates cash, quantity, avg cost (buy/sell rules).
+#     def apply_trade(self, trade: Trade):
+#         pass
