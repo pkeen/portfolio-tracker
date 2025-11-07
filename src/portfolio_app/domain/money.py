@@ -1,11 +1,11 @@
 # domain/money.py
 from dataclasses import dataclass
 from decimal import Decimal, ROUND_HALF_UP
-from typing import NewType
+from typing import NewType, Any
 
 Currency = NewType("Currency", str)
 
-def q(x) -> Decimal:
+def q(x: Any) -> Decimal:
     return Decimal(str(x))
 
 @dataclass(frozen=True, slots=True)

@@ -1,6 +1,6 @@
 # domain/portfolio.py
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, datetime, timezone
 from decimal import Decimal
 from typing import Dict, Iterable, List
 
@@ -24,14 +24,16 @@ class Portfolio:
         self._cash = self._cash + mov.amount
         self.events.append(TransactionRecorded(self.id, mov.asof, None, "cash"))
 
-    def record_trade(self, t: Trade) -> None:
+    def record_trade(self, t: Trade, recorded_ts: datetime | None = None) -> None:
+        ts = recorded_ts or datetime.now(timezone.utc)
+        
         _ensure_currency(self.base_ccy, t.price.currency)
         # update position
         pos = self._positions.get(t.security.value, Position(t.security, Decimal(0), Money(0, self.base_ccy)))
         self._positions[t.security.value] = pos.apply_trade(t.price, t.quantity)
         # update cash
         self._cash = self._cash + t.cash_impact
-        self.events.append(TransactionRecorded(self.id, t.asof, t.security, "trade", t.side, t.ts))
+        self.events.append(TransactionRecorded(self.id, t.asof, t.security, "trade", t.side, ts))
         # emit close event if needed
         if self._positions[t.security.value].quantity == 0:
             self.events.append(PositionClosed(self.id, t.security, t.asof))

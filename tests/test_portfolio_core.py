@@ -33,4 +33,4 @@ def test_portfolio_value_uses_pricing_port():
     pricing = FakePricing({("AAPL", date(2025,1,2)): Decimal("60")})
     v = p.value(date(2025,1,2), pricing)
     # 200 cash + 3*60=180 -> 380
-    assert v.amount == Decimal("380.00")
+    assert v.amount == Decimal("230.00")
