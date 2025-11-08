@@ -3,23 +3,39 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
+from enum import Enum
 from uuid import UUID
+
+
+class Side(str, Enum):
+    BUY = "BUY"
+    SELL = "SELL"
 
 
 # Emitted whenever a buy/sell is recorded against a portfolio.
 @dataclass(frozen=True)
-class TransactionRecorded:
-    portfolio_id: UUID
-    ticker: str          # keep simple to avoid circular deps on value objects
-    qty: int
-    price: Decimal
-    side: str            # "BUY" | "SELL"
-    ts: datetime
+class TradeRecorded:
+    portfolio_id: PortfolioId
+    asof: date
+    security: SecurityId
+    side: Side            # BUY/SELL
+    qty: Decimal
+    price: Money
+    fees: Money
+    ts: datetime       
 
 
 # Emitted when a position size becomes zero after a sell.
 @dataclass(frozen=True)
 class PositionClosed:
     portfolio_id: UUID
-    ticker: str
+    security: SecurityId
+    ts: datetime
+
+
+@dataclass(frozen=True)
+class CashRecorded:
+    portfolio_id: PortfolioId
+    asof: date
+    amount: Money       # + deposit, – withdrawal
     ts: datetime

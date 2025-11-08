@@ -4,7 +4,7 @@ from datetime import date, datetime, timezone
 from decimal import Decimal
 from typing import Dict, Iterable, List
 
-from .events import PositionClosed, TransactionRecorded
+from .events import CashRecorded, PositionClosed, TradeRecorded
 from .ids import PortfolioId, SecurityId
 from .money import Currency, Money, q
 from .positions import Position
@@ -22,7 +22,7 @@ class Portfolio:
     def record_cash(self, mov: CashMovement) -> None:
         _ensure_currency(self.base_ccy, mov.amount.currency)
         self._cash = self._cash + mov.amount
-        self.events.append(TransactionRecorded(self.id, mov.asof, None, "cash"))
+        self.events.append(CashRecorded(self.id, mov.asof, mov.amount, datetime.now(timezone.utc)))
 
     def record_trade(self, t: Trade, recorded_ts: datetime | None = None) -> None:
         ts = recorded_ts or datetime.now(timezone.utc)
@@ -33,7 +33,7 @@ class Portfolio:
         self._positions[t.security.value] = pos.apply_trade(t.price, t.quantity)
         # update cash
         self._cash = self._cash + t.cash_impact
-        self.events.append(TransactionRecorded(self.id, t.asof, t.security, "trade", t.side, ts))
+        self.events.append(TradeRecorded(self.id, t.asof, t.security, t.side, t.quantity, t.price, t.fees, ts))
         # emit close event if needed
         if self._positions[t.security.value].quantity == 0:
             self.events.append(PositionClosed(self.id, t.security, t.asof))
