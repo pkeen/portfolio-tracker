@@ -19,10 +19,10 @@ class Portfolio:
     _positions: Dict[str, Position] = field(default_factory=dict)
     events: List[object] = field(default_factory=list)
 
-    def record_cash(self, mov: CashMovement) -> None:
+    def record_cash(self, mov: CashMovement, recorded_ts: datetime | None = None) -> None:
         _ensure_currency(self.base_ccy, mov.amount.currency)
         self._cash = self._cash + mov.amount
-        self.events.append(CashRecorded(self.id, mov.asof, mov.amount, datetime.now(timezone.utc)))
+        self.events.append(CashRecorded(self.id, mov.asof, mov.amount, recorded_ts or datetime.now(timezone.utc)))
 
     def record_trade(self, t: Trade, recorded_ts: datetime | None = None) -> None:
         ts = recorded_ts or datetime.now(timezone.utc)
