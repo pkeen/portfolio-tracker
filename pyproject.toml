@@ -12,8 +12,7 @@ dependencies = [
 # CLI entrypoint: uv exposes this via `uv run pt ...`
 [project.scripts]
 pt = "portfolio_tracker.entrypoints.cli:app"
-
-
+pt-console = "portfolio_app.dev_console:main"
 
 [tool.ruff]
 line-length = 100

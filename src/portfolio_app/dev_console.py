@@ -4,6 +4,7 @@ from decimal import Decimal
 
 from IPython import embed
 
+from portfolio_app.adapters.repos_memory import MemoryPortfolioRepo
 from portfolio_app.domain.ids import PortfolioId, SecurityId
 from portfolio_app.domain.money import Currency, Money, q
 from portfolio_app.domain.portfolio import Portfolio
@@ -35,8 +36,32 @@ def sell(p: Portfolio, sym, qty, px, ccy="USD", d=None):
 def value(p: Portfolio, d, pricing):
     return p.value(d, pricing)
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
+#     repo = MemoryPortfolioRepo()
+#     p = make_portfolio()  # preloaded portfolio
+#     repo.add(p)
+#     pricing = FakePricing({("AAPL", date(2025, 1, 2)): Decimal("60")})
+#     banner = """
+# Preloaded names:
+#   p           -> Portfolio('P1', USD, $1000)
+#   pricing     -> FakePricing table with ('AAPL', 2025-01-02) = 60
+# Helpers:
+#   deposit(p, 500)
+#   buy(p, "AAPL", 2, 100, d=date(2025,1,1))
+#   sell(p, "AAPL", 1, 110, d=date(2025,1,2))
+#   value(p, date(2025,1,2), pricing)
+
+# Examples:
+#   >>> buy(p, "AAPL", 2, 100, d=date(2025,1,1))
+#   >>> value(p, date(2025,1,2), pricing)
+# """
+#     embed(header=banner)
+
+
+def main(): 
+    repo = MemoryPortfolioRepo()
     p = make_portfolio()  # preloaded portfolio
+    repo.add(p)
     pricing = FakePricing({("AAPL", date(2025, 1, 2)): Decimal("60")})
     banner = """
 Preloaded names:
