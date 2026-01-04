@@ -8,6 +8,7 @@ from portfolio_app.domain.events import CashRecorded
 from portfolio_app.domain.ids import PortfolioId, SecurityId
 from portfolio_app.domain.money import Currency, Money, q
 from portfolio_app.domain.portfolio import Portfolio
+from portfolio_app.domain.positions import Position
 from portfolio_app.domain.transactions import CashMovement, Trade
 
 clock = FakeClock()
@@ -46,3 +47,37 @@ def test_portfolio_value_uses_pricing_port():
     v = p.value(date(2025,1,2), pricing)
     # 200 cash + 3*60=180 -> 380
     assert v.amount == Decimal("230.00")
+
+
+
+def test_weighted_average_updates_on_buys():
+    pos = Position(SecurityId("AAPL"), Decimal(0), Money(0, Currency("USD")))
+    pos = pos.apply_trade(Money(100, Currency("USD")), q(2))  # cost 200
+    pos = pos.apply_trade(Money(110, Currency("USD")), q(3))  # cost +330 = 530, qty 5
+    assert pos.quantity == Decimal("5")
+    assert pos.avg_cost_per_share.amount == Decimal("106.00")  # 530/5 = 106.00
+
+
+
+def test_weighted_average_updates_on_buys():
+    pos = Position(SecurityId("AAPL"), Decimal(0), Money(0, Currency("USD")))
+    pos = pos.apply_trade(Money(100, Currency("USD")), q(2))  # cost 200
+    pos = pos.apply_trade(Money(110, Currency("USD")), q(3))  # cost +330 = 530, qty 5
+    assert pos.quantity == Decimal("5")
+    assert pos.avg_cost_per_share.amount == Decimal("106.00")  # 530/5 = 106.00
+
+def test_avg_cost_constant_on_sells_average_cost_method():
+    pos = Position(SecurityId("AAPL"), Decimal(0), Money(0, Currency("USD")))
+    pos = pos.apply_trade(Money(100, Currency("USD")), q(2))  # qty2 cost200 avg100
+    pos = pos.apply_trade(Money(110, Currency("USD")), q(3))  # qty5 cost530 avg106
+    pos2 = pos.apply_trade(Money(120, Currency("USD")), q(-2))  # sell 2, avg should stay 106
+    assert pos2.quantity == Decimal("3")
+    assert pos2.avg_cost_per_share.amount == Decimal("106.00")
+    # cost basis should be 3 * 106 = 318
+    assert pos2.cost_basis.amount == Decimal("318.00")
+
+def test_weighted_average_includes_buy_fees_if_configured():
+    pos = Position(SecurityId("AAPL"), Decimal(0), Money(0, Currency("USD")))
+    pos = pos.apply_trade(Money(100, Currency("USD")), q(2), fees=Money(10, Currency("USD")))
+    # total cost = 200 + 10 = 210, qty=2 => avg = 105
+    assert pos.avg_cost_per_share.amount == Decimal("105.00")

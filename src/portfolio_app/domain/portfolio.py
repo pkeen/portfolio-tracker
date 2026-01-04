@@ -30,7 +30,8 @@ class Portfolio:
         _ensure_currency(self.base_ccy, t.price.currency)
         # update position
         pos = self._positions.get(t.security.value, Position(t.security, Decimal(0), Money(0, self.base_ccy)))
-        self._positions[t.security.value] = pos.apply_trade(t.price, t.quantity)
+        
+        self._positions[t.security.value] = pos.apply_trade(t.price, t.quantity, t.fees)
         # update cash
         self._cash = self._cash + t.cash_impact
         self.events.append(TradeRecorded(self.id, t.asof, t.security, t.side, t.quantity, t.price, t.fees, ts))

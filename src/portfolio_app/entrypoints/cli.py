@@ -1,5 +1,6 @@
 # src/portfolio_tracker/entrypoints/cli.py
 import typer
+
 app = typer.Typer()
 
 @app.command()
